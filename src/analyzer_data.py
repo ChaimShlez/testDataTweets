@@ -7,10 +7,10 @@ class Analyzer_data:
         self.data=data_df
         self.unique_category=self.extract_unique_categorys()
         self.dict_category=self.check_amount_tweets_from_category()
-        self.sum_chars_by_unique_name()
+        self.dict_average_words=self.average_chars_by_unique_name()
         self.dict_three_longest=self.Three_longest_tweets_for_category()
         self.ten_words=self.ten_most_common_words()
-        self.amount_upper_case=self.amount_upper_case()
+        self.dict_upper_case =self.amount_upper_case()
 
 
     def extract_unique_categorys(self):
@@ -23,24 +23,25 @@ class Analyzer_data:
     def check_amount_tweets_from_category(self):
               dict_category={}
               for val in  self.unique_category:
-                  count = (self.data['Biased'] == val).sum()
-                  dict_category[val]=count
-                  return dict_category
+                  count = int((self.data['Biased'] == val).sum())
+                  dict_category[str(val)]=count
+              return dict_category
 
-    def sum_chars_by_unique_name(self):
+    def average_chars_by_unique_name(self):
 
         self.data['Word_Count'] = self.data['Text'].str.len()
-        dict_sum_words= self.data.groupby('Biased')['Word_Count'].mean().to_dict()
-        dict_sum_words['all'] =self.data['Word_Count'].mean()
-        return dict_sum_words
+        dict_average_words= self.data.groupby('Biased')['Word_Count'].mean().to_dict()
+        dict_average_words = {str(k): v for k, v in dict_average_words.items()}
+        dict_average_words['all'] =float(self.data['Word_Count'].mean())
+        return dict_average_words
 
 
     def Three_longest_tweets_for_category(self):
         dict_three_longest = {}
         for val in self.unique_category:
             top3 = self.data[self.data['Biased'] == val].nlargest(3, 'Word_Count')
-            dict_three_longest[val] = top3
-            return dict_three_longest
+            dict_three_longest[str(val)] = top3.to_dict(orient='records')
+        return dict_three_longest
 
     def ten_most_common_words(self):
 
@@ -52,10 +53,12 @@ class Analyzer_data:
     def amount_upper_case(self):
         words_by_category = self.data.groupby('Biased')["Text"].apply(' '.join)
         words_by_category = words_by_category.apply(lambda x: x.split())
-        for category,words in words_by_category.items():
+        dict_upper_case = {}
+        for category, words in words_by_category.items():
+            amount_upper_case_words = sum(1 for word in words if word.isupper())
+            dict_upper_case[str(category)] = int(amount_upper_case_words)
 
-            amount_upper_case= sum(1 for word in words if word.isupper())
-            return amount_upper_case
+        return dict_upper_case
 
 
 

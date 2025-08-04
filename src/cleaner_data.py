@@ -11,7 +11,7 @@ class Cleaner_data:
 
 
     def save_columns(self):
-        self.data=self.data.drop(["TweetID","Username","CreateDate","Keyword","Word_Count"], axis='columns')
+        self.data=self.data.drop(["TweetID","Username","CreateDate","Keyword"], axis='columns')
         # print(self.data)
 
 
