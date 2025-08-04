@@ -19,7 +19,6 @@ class Analyzer_data:
 
 
 
-#extracts the value names because I don't know what "undefined" will be, and then lists the quantity by value.
     def check_amount_tweets_from_category(self):
               dict_category={}
               for val in  self.unique_category:
